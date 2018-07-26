@@ -2,6 +2,7 @@
 
 from pygame import *
 from random import randint
+from sys import argv
 init()
 
 h = 920
@@ -64,7 +65,10 @@ class pallina():
             self.dy = -self.dy
         screen.blit(self.sprite, (self.x, self.y))
 
-for _ in range(5):
+
+numeropalline = int(argv[1])
+
+for _ in range(numeropalline):
     pallina(randint(200, 400), randint(200, 400), randint(-20, 20), randint(-20, 20), randint(0, 50))
 
 ii = 0
