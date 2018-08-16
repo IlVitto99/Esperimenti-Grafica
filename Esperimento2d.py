@@ -44,6 +44,8 @@ class pallina():
                 self.dy = -(i.y - self.y) * (1/md) * mv
 
     def draw(self):
+        #self.dy += 1 gravita
+
         self.x += self.dx
         self.y += self.dy
 
