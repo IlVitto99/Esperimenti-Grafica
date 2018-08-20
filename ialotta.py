@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 
 from pygame import *
-from random import randint
 from sys import argv
 import numpy as np
-from random import random, seed
-seed(65465+46854654)
 
 init()
 
@@ -34,10 +31,10 @@ def setMod(x, y, m):
 
 class layer():
     def __init__(self, nValore, nValorePre):
-        self.valori = np.array([0 for _ in range(nValore)])
+        self.valori = np.zeros((nValore,), dtype = float) #crea un arry di grandezza nValore pieno di zeri
         if nValorePre != 0:
-            self.bies = np.array([random() for _ in range(nValore)])
-            self.pesi = np.array([random() for _ in range(nValore * nValorePre)]).reshape(nValorePre, nValore) 
+            self.bies = np.random.uniform(-10,10,(nValore,)) #crea un arry di grandezza nValore pieno di valori randomici
+            self.pesi = np.random.uniform(-10,10,(nValorePre, nValore))
             
 class nn():
     def __init__(self,lista):
@@ -49,10 +46,13 @@ class nn():
                 
     def feedforward(self,inputs):
         if inputs.size == self.layers[0].valori.size:
-            self.layers[0].valori = inputs
-            for k,i in enumerate(self.layers):       
+            self.layers[0].valori = inputs #nelle primo layer iserisce gli input
+            for k, i in enumerate(self.layers):       
                 if k != 0:
-                    self.layers[k].valori = self.layers[k-1].valori.dot(self.layers[k].pesi) + self.layers[k].bies 
+                    valorePrecdenti = self.layers[k-1].valori
+                    pesiAttuali = self.layers[k].pesi
+                    biesAttuali = self.layers[k].bies
+                    self.layers[k].valori = np.tanh(valorePrecdenti.dot(pesiAttuali) + biesAttuali) #calcola i volori delle layer 
         
             return self.layers[-1].valori
 
@@ -133,13 +133,13 @@ class ogetto():
         while time > 0:
             for o in lista:
                 if o.tipo == "g":
-                    ioi = 0
+
                     for i in lista:
-                        if i != o:
-                            ioi = i
-                    ris = o.ai(ioi)
-                    if ris != None:
-                        lista.append(ris)
+                        if i != o and i.tipo == "g":
+                            ris = o.ai(i)
+                            if ris != None:
+                                lista.append(ris)
+                            break
 
             for o in lista:
                 ris = o.collisione(lista)
@@ -180,7 +180,6 @@ class gicatore(ogetto):
         self.setv(nx, ny)
         if ris[2] > 0: 
             return self.atack()
-
 
 
 class proietile(ogetto):
