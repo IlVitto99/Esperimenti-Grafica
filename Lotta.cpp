@@ -7,6 +7,20 @@ typedef std::vector<neurone> data;
 typedef std::vector<int> struttura;
 typedef std::vector<std::vector<float>> peso;
 
+float qdistance(float x1, float y1, float x2, float y2){
+    return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);                                     
+}
+
+float getModulo(float x, float y){
+    return sqrt(x * x + y * y);
+}
+
+void setModulo(float &x, float &y, float nouvoModulo){
+    float moduloAttuale = getModulo(x, y);
+    x = x * (1 / moduloAttuale) * nouvoModulo
+    y = y * (1 / moduloAttuale) * nouvoModulo
+}
+
 float RandomNumber(float Min, float Max)
 {
     return ((float(rand()) / float(RAND_MAX)) * (Max - Min)) + Min;
@@ -25,7 +39,7 @@ class neuralnetwork{
 
 data neuralnetwork::feedforward(data input){
     if(input.size() == rete[0].size()){
-        rete[0] = input; // probabilmente da riscrivere utilizzando un ciclo for
+        rete[0] = input; 
         for(int i = 1; i < rete.size(); i++){
     
             for(int k = 0; k < rete[i].size(); k++){
@@ -65,24 +79,93 @@ neuralnetwork::neuralnetwork(struttura ss){
     }
 }
 
-struct ai{
-    ai(struttura ss){
-        nn = neuralnetwork(ss);
-    }
+const int w = 1200, h = 800;
 
-    void calcolapunteggio(){
-        data out;
-        punteggio = 0;
-        out = nn.feedforward({1,1});
-        errore = 1 - out[0];
-        punteggio += 1 - errore;
-    }
+class pallina;
 
-    neuralnetwork nn;
-    float punteggio;
-    float errore;
+typedef std::vector<pallina> listaOggetti
+
+class pallina{
+    public:
+        pallina();
+        pallina(int x, int y, int tipo);
+
+        bool RunOneFrame();
+        void attacca(listaOggetti &li); 
+        void collisione(listaOggetti &li);
+        void ai(listaOggetti &li);
+        void drow();
+        void setXY(int x, int y);
+        void setV(int dx, int dy);
+
+    private:
+        int x, y, dx, dy, vita, time, tipo, raggio;
+        neuralnetwork cervello;
+        static int indexC;
+        int index;
+};
+
+int pallina::indexC = 0;
+
+void pallina::ai(listaOggetti &li){
+    data ris;
+    for (i = 0; i < li.size() i++){
+            if (li[i].tipo == 0 && li[i].index != index){
+               ris = cervello.feedforward({li[i].x,li[i].y,li[i].dx,li[i].dy, x, y, dx, dy, vita, time});
+            }                                                                                    
+    } 
+    dx = ris[0];
+    dy = ris[1];
+    setModulo(dx, dy, 20);
+
+    if(ris[2] > 0.4){
+        attacca(li);
+    } 
 }
 
+void pallina::setXY(int x, int y){
+    this->x = x;
+    this->y = y;  
+}
+
+void pallina::setV(int dx, int dy){
+    this->dx = dx;
+    this->dy = dy;
+}
+
+pallina::pallina(int x, int y, int tipo){
+    this->x = x;
+    this->y = y;
+    this->tipo = tipo;
+    cervello = neuralnetwork({});
+    index = indexC++;
+    if(tipo == 0) raggio = 20;
+    else raggio = 5;
+    vita = 0;
+}
+
+bool pallina::RunOneFrame(){
+    if(time > 0)
+        time--;
+    if(tipo == 1  and time <= 0)
+        return false;
+
+    if(vita <= 0)
+        return false;
+
+    x += dx;
+    y += dy;
+
+    if (x >= w-raggio*2 or x <= 0){
+        dx = -dx;
+        x += dx;
+    }
+    if (y >= h-raggio*2 or y <= 0){
+        dy = -dy;
+        y += dy;
+    }
+    return true;
+}
 // 1 1 = 1 
 // 0 1 = 0
 // 1 0 = 0
