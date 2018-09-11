@@ -114,10 +114,10 @@ namespace nn
             Net[0][i].setValore(input[i]);
         
         for(unsigned i = 1; i < Net.size(); i++)
-            for(unsigned k = 0; k < Net[i].size(); k++) // ff
+            for(unsigned k = 0; k < Net[i].size() - 1; k++)
                 Net[i][k].calcValore(Net[i - 1]);
         }
-    }//no coment
+    }//no comment
 
     void NeuralNetwork::BackProp(data target, bool calcW)
     {
@@ -223,7 +223,7 @@ namespace nn
     void Neurone::calcValore(layer& pre)
     {
         _valore_ = 0;
-        for(unsigned i = 0; i < pre.size() - 1; i++)
+        for(unsigned i = 0; i < pre.size(); i++)
             _valore_ += pre[i].getValore() * pre[i].getWeight(_index_);
         _valore_ = fun(_valore_);
     }

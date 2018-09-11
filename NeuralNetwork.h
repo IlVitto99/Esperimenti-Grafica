@@ -18,8 +18,8 @@ namespace nn
     typedef std::vector<double> data;
     typedef std::vector<unsigned int> struttura;
 
-    const int pnc = 100;
-    extern double alfa; 
+    const int pnc = 1000;
+    extern double alfa;
     extern double eta;
 
     template<typename T>
